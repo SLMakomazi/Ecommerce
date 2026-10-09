@@ -1,0 +1,17 @@
+# Apply from the engine repository with its existing Compose file.
+services:
+  backend-api:
+    environment:
+      MONITOR_APPLICATION_ID: ecommerce
+      MONITOR_ENVIRONMENT: local
+      TOPOLOGY_REFRESH_ENABLED: "true"
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/integration/ecommerce.yml
+    volumes:
+      - ${ECOMMERCE_ROOT:?Set absolute path to Ecommerce}/infrastructure/blast-radius/application-ecommerce.yml:/integration/ecommerce.yml:ro
+    networks:
+      - default
+      - ecommerce
+networks:
+  ecommerce:
+    external: true
+    name: ecommerce-network

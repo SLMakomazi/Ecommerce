@@ -1,0 +1,43 @@
+name: Verify backend
+on: [push, pull_request]
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: mvn -B verify
+      - run: npm ci --prefix payment-service && npm --prefix payment-service test
+      - run: npm ci --prefix notification-service && npm --prefix notification-service test
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/init_env.py
+      - run: docker compose --profile monitoring up -d --build
+      - name: Wait for applications
+        run: |
+          for attempt in $(seq 1 90); do
+            ready=true
+            for port in 18101 18102 18103 18104 18105; do
+              curl -fsS "http://localhost:$port/actuator/health/readiness" >/dev/null || ready=false
+            done
+            if [ "$ready" = true ]; then exit 0; fi
+            sleep 2
+          done
+          docker compose logs --tail 100
+          exit 1
+      - run: python3 scripts/smoke.py --outages
+      - run: python3 scripts/check_telemetry.py
+      - if: failure()
+        run: docker compose logs --tail 100
+      - if: always()
+        run: docker compose --profile monitoring down

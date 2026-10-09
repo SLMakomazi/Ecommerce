@@ -1,0 +1,16 @@
+# Low-memory development mode. Public APIs and business behavior are unchanged.
+# Start without --profile monitoring. Traces/log export are disabled in this mode.
+services:
+  customer-service:
+    environment:
+      OTEL_JAVAAGENT_ENABLED: "false"
+  catalog-service:
+    environment:
+      OTEL_JAVAAGENT_ENABLED: "false"
+  order-service:
+    environment:
+      OTEL_JAVAAGENT_ENABLED: "false"
+  payment-service:
+    command: ["node", "src/app.js"]
+  notification-service:
+    command: ["node", "src/app.js"]

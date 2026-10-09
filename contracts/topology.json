@@ -1,0 +1,127 @@
+{
+  "applicationId": "ecommerce",
+  "environment": "local",
+  "provenance": "declared-design; not observed runtime evidence",
+  "components": [
+    {
+      "id": "customer-service",
+      "type": "service",
+      "technology": "spring-boot"
+    },
+    {
+      "id": "catalog-service",
+      "type": "service",
+      "technology": "spring-boot"
+    },
+    {
+      "id": "order-service",
+      "type": "service",
+      "technology": "spring-boot"
+    },
+    {
+      "id": "payment-service",
+      "type": "service",
+      "technology": "nodejs"
+    },
+    {
+      "id": "notification-service",
+      "type": "service",
+      "technology": "nodejs"
+    },
+    {
+      "id": "customer-db",
+      "type": "database",
+      "technology": "postgresql"
+    },
+    {
+      "id": "catalog-db",
+      "type": "database",
+      "technology": "postgresql"
+    },
+    {
+      "id": "order-db",
+      "type": "database",
+      "technology": "postgresql"
+    },
+    {
+      "id": "payment-db",
+      "type": "database",
+      "technology": "postgresql"
+    },
+    {
+      "id": "notification-db",
+      "type": "database",
+      "technology": "postgresql"
+    },
+    {
+      "id": "rabbitmq",
+      "type": "broker"
+    },
+    {
+      "id": "keycloak",
+      "type": "identity-provider"
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "customer-service",
+      "to": "customer-db",
+      "kind": "database",
+      "requiredFor": "persistent operations"
+    },
+    {
+      "from": "catalog-service",
+      "to": "catalog-db",
+      "kind": "database",
+      "requiredFor": "persistent operations"
+    },
+    {
+      "from": "order-service",
+      "to": "order-db",
+      "kind": "database",
+      "requiredFor": "persistent operations"
+    },
+    {
+      "from": "payment-service",
+      "to": "payment-db",
+      "kind": "database",
+      "requiredFor": "persistent operations"
+    },
+    {
+      "from": "notification-service",
+      "to": "notification-db",
+      "kind": "database",
+      "requiredFor": "persistent operations"
+    },
+    {
+      "from": "order-service",
+      "to": "catalog-service",
+      "kind": "http",
+      "requiredFor": "checkout inventory steps"
+    },
+    {
+      "from": "order-service",
+      "to": "payment-service",
+      "kind": "http",
+      "requiredFor": "checkout payment/refund steps"
+    },
+    {
+      "from": "order-service",
+      "to": "rabbitmq",
+      "kind": "messaging",
+      "requiredFor": "outbox delivery; checkout persists without it"
+    },
+    {
+      "from": "notification-service",
+      "to": "rabbitmq",
+      "kind": "messaging",
+      "requiredFor": "notification consumption"
+    }
+  ],
+  "notes": [
+    "Edges mean caller depends on target for the named operation. They do not imply all endpoints fail.",
+    "Keycloak supplies signing keys; cached keys permit continued token validation during temporary identity-provider outages.",
+    "No customer-service to catalog-service/order-service dependency.",
+    "This file is documentation/input for a future declared provider; the engine does not currently import it."
+  ]
+}

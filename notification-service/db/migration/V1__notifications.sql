@@ -1,0 +1,1 @@
+CREATE TABLE notifications(event_id UUID PRIMARY KEY,customer_id UUID NOT NULL,order_id UUID NOT NULL,type VARCHAR(50) NOT NULL,message TEXT NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT now());CREATE INDEX notifications_customer_idx ON notifications(customer_id,created_at DESC);

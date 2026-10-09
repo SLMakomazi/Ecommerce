@@ -1,0 +1,38 @@
+global:
+  scrape_interval: 5s
+  external_labels:
+    application: ecommerce
+    environment: local
+scrape_configs:
+  - job_name: ecommerce-java
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['customer-service:8080']
+        labels: {service: customer-service, application: ecommerce, environment: local}
+      - targets: ['catalog-service:8080']
+        labels: {service: catalog-service, application: ecommerce, environment: local}
+      - targets: ['order-service:8080']
+        labels: {service: order-service, application: ecommerce, environment: local}
+  - job_name: ecommerce-node
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['payment-service:3000']
+        labels: {service: payment-service, application: ecommerce, environment: local}
+      - targets: ['notification-service:3000']
+        labels: {service: notification-service, application: ecommerce, environment: local}
+  - job_name: rabbitmq
+    static_configs:
+      - targets: ['rabbitmq:15692']
+        labels: {service: rabbitmq, application: ecommerce, environment: local}
+  - job_name: postgres
+    static_configs:
+      - targets: ['customer-db-exporter:9187']
+        labels: {service: customer-db, application: ecommerce, environment: local}
+      - targets: ['catalog-db-exporter:9187']
+        labels: {service: catalog-db, application: ecommerce, environment: local}
+      - targets: ['order-db-exporter:9187']
+        labels: {service: order-db, application: ecommerce, environment: local}
+      - targets: ['payment-db-exporter:9187']
+        labels: {service: payment-db, application: ecommerce, environment: local}
+      - targets: ['notification-db-exporter:9187']
+        labels: {service: notification-db, application: ecommerce, environment: local}

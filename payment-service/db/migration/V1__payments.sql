@@ -1,0 +1,2 @@
+CREATE TABLE payments(order_id UUID PRIMARY KEY,customer_id UUID NOT NULL,amount NUMERIC(19,2) NOT NULL CHECK(amount>0),currency VARCHAR(3) NOT NULL CHECK(currency='ZAR'),status VARCHAR(20) NOT NULL CHECK(status IN ('SUCCEEDED','DECLINED','REFUNDED')),sandbox_token VARCHAR(30) NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT now());
+CREATE INDEX payments_customer_idx ON payments(customer_id,created_at DESC);
